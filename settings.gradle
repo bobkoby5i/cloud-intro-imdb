@@ -1,0 +1,5 @@
+rootProject.name = 'intro-vhs'
+
+include 'svc-catalog'
+include 'svc-movie-info'
+include 'svc-ratings'

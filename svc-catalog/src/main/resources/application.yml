@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: vhs-club
+server:
+  port: 8083
