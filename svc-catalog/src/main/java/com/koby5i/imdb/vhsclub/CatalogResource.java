@@ -1,5 +1,6 @@
 package com.koby5i.imdb.vhsclub;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,24 +16,31 @@ import java.util.stream.Collectors;
 @RequestMapping("/catalog")
 public class CatalogResource {
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @RequestMapping("/{userId}")
     public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
 
-        RestTemplate restTemplate = new RestTemplate();
-        //restTemplate.getForObject("localhost:8081/movies/1",Movie.class);
-
         // get all movieId's and ratings  for userId from /ratings/{userId}
-        List<Rating> ratings = Arrays.asList(
-                new Rating("123", 3),
-                new Rating("124", 4)
-        );
+        System.out.println("Fetch movies and ratings for user = "+userId+" from localhost:8082/ratings/user/" + userId + " ...");
+        UserRating userRating = restTemplate.getForObject("http://localhost:8082/ratings/user/" + userId, UserRating.class);
+
+
 
         // for each movieId get movie details from /movies/{movieId}
-
         //put tem all together  and return collection
         // use List<Ratings> list and produce List<CatalogItem>
-        return ratings.stream().map(rating -> new CatalogItem("MOvieNAme", "Description", 4))
-                .collect(Collectors.toList());
+        return userRating.getRatings().stream()
+            .map(rating -> {
+            System.out.println("Fetch movie info from localhost:8081/movies/" + rating.getMovieId() +" ...");
+
+            // each response is single movie json
+            Movie movie = restTemplate.getForObject("http://localhost:8081/movies/" + rating.getMovieId(), Movie.class);
+            System.out.println("adding to list movie:" + movie.getName()+" "+ movie.getDescription()+" "+ rating.getRating());
+            return new CatalogItem(movie.getName(), movie.getDescription(), rating.getRating());
+        }).collect(Collectors.toList());
+
 
         //return Collections.singletonList(new CatalogItem("TestName", "Test Desc", 4));
     }
