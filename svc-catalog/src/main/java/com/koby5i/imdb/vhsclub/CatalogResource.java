@@ -26,37 +26,48 @@ public class CatalogResource {
 //    private DiscoveryClient discoveryClient;
 
     @RequestMapping("/{userId}")
-    @HystrixCommand(fallbackMethod = "getFallbackCatalog")
     public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
 
-        // get all movieId's and ratings  for userId from /ratings/{userId}
-        System.out.println("Fetch movies and ratings for user = "+userId+" from http://ratings-svc/ratings/user/" + userId + " ...");
-        //UserRating userRating = restTemplate.getForObject("http://localhost:8082/ratings/user/" + userId, UserRating.class);
-        UserRating userRating = restTemplate.getForObject("http://ratings-svc/ratings/user/" + userId, UserRating.class);
-
-
-
+        UserRating userRating = getUserRating(userId);
         // for each movieId get movie details from /movies/{movieId}
-        //put tem all together  and return collection
+        // put tem all together  and return collection
         // use List<Ratings> list and produce List<CatalogItem>
         return userRating.getRatings().stream()
-            .map(rating -> {
-            System.out.println("Fetch movie info from http://movie-info-svc/movies/" + rating.getMovieId() +" ...");
+            .map(rating -> getCatalogItem(rating))
+            .collect(Collectors.toList());
+    }
 
+    @HystrixCommand(fallbackMethod = "getFallbackUserRating")
+    private UserRating getUserRating(@PathVariable("userId") String userId) {
+        // get all movieId's and ratings  for userId from /ratings/{userId}
+        System.out.println("Fetch movies and ratings for user = " + userId + " from http://ratings-svc/ratings/user/" + userId + " ...");
+        //UserRating userRating = restTemplate.getForObject("http://localhost:8082/ratings/user/" + userId, UserRating.class);
+        UserRating userRating = restTemplate.getForObject("http://ratings-svc/ratings/user/" + userId, UserRating.class);
+        return userRating;
+    }
+
+    private UserRating getFallbackUserRating(@PathVariable("userId") String userId) {
+        System.out.println("Hystrix getFallbackUserRating()");
+        UserRating userRating = new UserRating();
+        userRating.setUserId(userId);
+        userRating.setRatings(Arrays.asList(new Rating("0",0)));
+        return userRating;
+    }
+
+    @HystrixCommand(fallbackMethod = "getFallbackCatalogItem")
+    private CatalogItem getCatalogItem(Rating rating){
         // each response is single movie json
         //Movie movie = restTemplate.getForObject("http://localhost:8081/movies/" + rating.getMovieId(), Movie.class);
+        System.out.println("Fetch movie info from http://movie-info-svc/movies/" + rating.getMovieId() +" ...");
         Movie movie = restTemplate.getForObject("http://movie-info-svc/movies/" + rating.getMovieId(), Movie.class);
         System.out.println("adding to list movie:" + movie.getName()+" "+ movie.getDescription()+" "+ rating.getRating());
         return new CatalogItem(movie.getName(), movie.getDescription(), rating.getRating());
-        }).collect(Collectors.toList());
-
-
-        //return Collections.singletonList(new CatalogItem("TestName", "Test Desc", 4));
-        }
-
-    public List<CatalogItem> getFallbackCatalog(@PathVariable("userId") String userId) {
-        return Arrays.asList(new CatalogItem("Hystrix No Movies ","",0));
     }
 
+    private CatalogItem getFallbackCatalogItem(Rating rating){
+        System.out.println("Hystrix getFallbackCatalogItem()");
+        return new CatalogItem("Movie name not available. try again", "Unknown", rating.getRating());
+
+    }
 
 }
