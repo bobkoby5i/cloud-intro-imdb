@@ -3,3 +3,7 @@ spring:
     name: movie-info-svc
 server:
   port: 8081
+
+
+api:
+  key: get_api_key_here
