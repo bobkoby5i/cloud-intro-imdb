@@ -37,6 +37,7 @@ Postman:
 
 ### Change Log
 
+* 2020-01-22 add Hystrix
 * 2020-01-22 add fetch movies from https://www.themoviedb.org
 * 2020-01-21 add Discovery Seervice & Load balancer
 * 2020-01-20 add Communication REST template, mocked up responses

@@ -1,6 +1,8 @@
 package com.koby5i.imdb.vhsclub;
 
 import com.netflix.discovery.DiscoveryClient;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.ribbon.proxy.annotation.Hystrix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,7 @@ public class CatalogResource {
 //    private DiscoveryClient discoveryClient;
 
     @RequestMapping("/{userId}")
+    @HystrixCommand(fallbackMethod = "getFallbackCatalog")
     public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
 
         // get all movieId's and ratings  for userId from /ratings/{userId}
@@ -50,4 +53,10 @@ public class CatalogResource {
 
         //return Collections.singletonList(new CatalogItem("TestName", "Test Desc", 4));
         }
-        }
+
+    public List<CatalogItem> getFallbackCatalog(@PathVariable("userId") String userId) {
+        return Arrays.asList(new CatalogItem("Hystrix No Movies ","",0));
+    }
+
+
+}

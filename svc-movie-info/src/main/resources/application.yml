@@ -6,4 +6,4 @@ server:
 
 
 api:
-  key: get_api_key_here
+  key: api_key_here
