@@ -17,7 +17,7 @@ public class MovieInfo {
 
     @HystrixCommand(fallbackMethod = "getFallbackCatalogItem",
             commandProperties = {
-                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000"), // wait for this long if no response than time out
+                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000"), // wait for this long if no response than time out
                     @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "6"),      // if 6 timeouts then turn circuit breaker on
                     @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "50"),   // check if 50% of last 6 request failed then turn circuit breaker on
                     @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "100000") // try again in 1000 milliseconds

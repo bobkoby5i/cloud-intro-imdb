@@ -28,7 +28,7 @@ public class MovieResource {
     @RequestMapping("/{movieId}")
     public Movie getMovieInfo(@PathVariable("movieId") String movieId) {
         try {
-            int i = 2000;
+            int i = 20;
             System.out.println("sleep " + i);
             Thread.sleep(i);
 
