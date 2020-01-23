@@ -37,8 +37,9 @@ Postman:
 
 ### Change Log
 
+* 2020-01-22 add Hystrix timeout parameters
 * 2020-01-22 add Discovery list registered instances
-* 2020-01-22 add Hystric more granuality 
+* 2020-01-22 add Hystrix more granuality 
 * 2020-01-22 add Hystrix
 * 2020-01-22 add fetch movies from https://www.themoviedb.org
 * 2020-01-21 add Discovery Seervice & Load balancer
