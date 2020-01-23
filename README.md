@@ -9,6 +9,7 @@ Eureka discovery resolves names to registered services. Client (catalog-svc) doe
 * ratings-svc http://ratings-svc/ratings/user/12
  
 
+ 
 
 ## Application flow:
 Get catalog info for UserId. 
